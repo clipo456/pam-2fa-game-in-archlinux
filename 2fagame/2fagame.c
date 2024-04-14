@@ -1,5 +1,6 @@
 #include <security/pam_modules.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /*
  * Authentication realm
