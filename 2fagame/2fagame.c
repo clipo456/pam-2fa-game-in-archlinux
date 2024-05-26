@@ -17,14 +17,14 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     const void *user;
     ret = pam_get_item(pamh, PAM_USER, &user);
     if (ret != PAM_SUCCESS || user == NULL) {
-        pam_syslog(pamh, LOG_ERR, "Failed to retrieve username or primary auth failed");
+        pam_syslog(pamh, SIG_ERR, "Failed to retrieve username or primary auth failed");
         return PAM_AUTH_ERR;
     }
 
     pid = fork();
     if (pid == -1) {
         // Fork failed
-        pam_syslog(pamh, LOG_ERR, "Fork failed");
+        pam_syslog(pamh, SIG_ERR, "Fork failed");
         return PAM_AUTH_ERR;
     } else if (pid == 0) {
         // Child process
@@ -34,7 +34,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     } else {
         // Parent process
         if (waitpid(pid, &status, 0) == -1) {
-            pam_syslog(pamh, LOG_ERR, "Waitpid failed");
+            pam_syslog(pamh, SIG_ERR, "Waitpid failed");
             return PAM_AUTH_ERR;
         }
         
