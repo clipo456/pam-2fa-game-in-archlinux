@@ -13,31 +13,32 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     int status;
     pid_t pid;
 
-    // Check if the primary authentication has already succeeded
+    // Verifique se a autenticação primária foi bem-sucedida
     const void *user;
     ret = pam_get_item(pamh, PAM_USER, &user);
     if (ret != PAM_SUCCESS || user == NULL) {
-        pam_syslog(pamh, SIG_ERR, "Failed to retrieve username or primary auth failed");
+        pam_syslog(pamh, SIG_ERR, "Falha ao recuperar o nome de usuário ou autenticação primária falhou");
         return PAM_AUTH_ERR;
     }
 
+    // Autenticação adicional
     pid = fork();
     if (pid == -1) {
-        // Fork failed
-        pam_syslog(pamh, SIG_ERR, "Fork failed");
+        // Falha ao criar um novo processo
+        pam_syslog(pamh, SIG_ERR, "Falha ao criar um novo processo");
         return PAM_AUTH_ERR;
     } else if (pid == 0) {
-        // Child process
+        // Processo filho
         execl("/root/pam-2fa-game-in-archlinux/2fagame/forca", "forca", NULL);
-        // If execl returns, it must have failed
+        // Se execl retornar, deve ter falhado
         _exit(EXIT_FAILURE);
     } else {
-        // Parent process
+        // Processo pai
         if (waitpid(pid, &status, 0) == -1) {
-            pam_syslog(pamh, SIG_ERR, "Waitpid failed");
+            pam_syslog(pamh, SIG_ERR, "Falha ao esperar o processo filho");
             return PAM_AUTH_ERR;
         }
-        
+
         if (WIFEXITED(status) && WEXITSTATUS(status) == 34) {
             return PAM_SUCCESS;
         } else {
@@ -47,6 +48,6 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
 }
 
 int pam_sm_setcred(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-    // Typically, setcred is used to establish credentials after authentication
+    // Geralmente, setcred é usado para estabelecer credenciais após a autenticação
     return PAM_SUCCESS;
 }
