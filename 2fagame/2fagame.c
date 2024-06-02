@@ -43,7 +43,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
         if (WIFEXITED(status)) {
             int exit_status = WEXITSTATUS(status);
             if (exit_status == 34) {
-                pam_syslog(pamh, LOG_INFO, "Autenticação adicional bem-sucedida com código de saída: %d", exit_status);
+                pam_syslog(pamh, SIG_INFO, "Autenticação adicional bem-sucedida com código de saída: %d", exit_status);
                 return PAM_SUCCESS;
             } else {
                 pam_syslog(pamh, SIG_ERR, "Autenticação adicional falhou com código de saída: %d", exit_status);
