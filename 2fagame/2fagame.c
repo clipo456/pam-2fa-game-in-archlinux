@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <syslog.h>  // Adicione este cabeçalho
 
 /*
  * Authentication realm
