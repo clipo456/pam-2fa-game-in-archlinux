@@ -17,7 +17,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     const void *user;
     ret = pam_get_item(pamh, PAM_USER, &user);
     if (ret != PAM_SUCCESS || user == NULL) {
-        pam_syslog(pamh, LOG_ERR, "Falha ao recuperar o nome de usuário ou autenticação primária falhou");
+        pam_syslog(pamh, SIG_ERR, "Falha ao recuperar o nome de usuário ou autenticação primária falhou");
         return PAM_AUTH_ERR;
     }
 
@@ -25,7 +25,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     pid = fork();
     if (pid == -1) {
         // Falha ao criar um novo processo
-        pam_syslog(pamh, LOG_ERR, "Falha ao criar um novo processo");
+        pam_syslog(pamh, SIG_ERR, "Falha ao criar um novo processo");
         return PAM_AUTH_ERR;
     } else if (pid == 0) {
         // Processo filho
@@ -35,7 +35,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     } else {
         // Processo pai
         if (waitpid(pid, &status, 0) == -1) {
-            pam_syslog(pamh, LOG_ERR, "Falha ao esperar o processo filho");
+            pam_syslog(pamh, SIG_ERR, "Falha ao esperar o processo filho");
             return PAM_AUTH_ERR;
         }
 
@@ -46,11 +46,11 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
                 pam_syslog(pamh, LOG_INFO, "Autenticação adicional bem-sucedida com código de saída: %d", exit_status);
                 return PAM_SUCCESS;
             } else {
-                pam_syslog(pamh, LOG_ERR, "Autenticação adicional falhou com código de saída: %d", exit_status);
+                pam_syslog(pamh, SIG_ERR, "Autenticação adicional falhou com código de saída: %d", exit_status);
                 return PAM_AUTH_ERR;
             }
         } else {
-            pam_syslog(pamh, LOG_ERR, "Processo filho terminou de forma anormal");
+            pam_syslog(pamh, SIG_ERR, "Processo filho terminou de forma anormal");
             return PAM_AUTH_ERR;
         }
     }
