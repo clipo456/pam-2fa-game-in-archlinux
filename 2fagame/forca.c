@@ -86,7 +86,6 @@ int main() {
 
 		do {
 
-			system("cls");
 
 			//Limpa as letras usadas
 			for (i = 0; i < strlen(letrasUsadas); i++) {
@@ -108,7 +107,6 @@ int main() {
 
 				do {
 
-					system("cls");
 
 					printf(
 							"#################################### Forca #####################################");
@@ -187,7 +185,6 @@ int main() {
 
 			while (strcmp(palavra, acertos) != 0 && erros != 6) {
 
-				system("cls");
 
 				printf(
 						"#################################### Forca #####################################");
