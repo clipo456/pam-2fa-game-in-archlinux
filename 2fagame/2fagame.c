@@ -19,7 +19,6 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     if (pid == -1) {
         
         // Falha ao criar um novo processo
-        pam_syslog(pamh, LOG_ERR, "Falha ao criar um novo processo");
         return PAM_AUTH_ERR;
     } else if (pid == 0) {
         // Processo filho
@@ -29,7 +28,6 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     } else {
         // Processo pai
         if (waitpid(pid, &status, 0) == -1) {
-            pam_syslog(pamh, LOG_ERR, "Falha ao esperar o processo filho");
             return PAM_AUTH_ERR;
         }
 
@@ -45,7 +43,6 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
                 return PAM_AUTH_ERR;
             }
         } else {
-            pam_syslog(pamh, LOG_ERR, "Processo filho terminou de forma anormal");
             return PAM_AUTH_ERR;
         }
     }
