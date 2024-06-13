@@ -17,6 +17,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     // Autenticação adicional
     pid = fork();
     if (pid == -1) {
+        printf("%i",status);
         // Falha ao criar um novo processo
         pam_syslog(pamh, LOG_ERR, "Falha ao criar um novo processo");
         return PAM_AUTH_ERR;
