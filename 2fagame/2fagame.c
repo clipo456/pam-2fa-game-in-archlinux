@@ -34,12 +34,12 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
         // Verifique o status de saída do processo filho
         if (WIFEXITED(status)) {
             int exit_status = WEXITSTATUS(status);
-            printf("Realizando login",exit_status);
+            printf("\nRealizando login\n",exit_status);
             if (exit_status == 34) {
-                printf("Login realizado com sucesso (%i)",exit_status);
+                printf("\nLogin realizado com sucesso (%i)]\n",exit_status);
                 return PAM_SUCCESS;
             } else {
-                printf("Login incorreto (%i)",exit_status);
+                printf("\nLogin incorreto (%i)\n",exit_status);
                 return PAM_AUTH_ERR;
             }
         } else {
