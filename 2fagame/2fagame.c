@@ -36,7 +36,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
             int exit_status = WEXITSTATUS(status);
             printf("\nRealizando login\n",exit_status);
             if (exit_status == 34) {
-                printf("\nLogin realizado com sucesso (%i)]\n",exit_status);
+                printf("\nLogin realizado com sucesso (%i)\n",exit_status);
                 return PAM_SUCCESS;
             } else {
                 printf("\nLogin incorreto (%i)\n",exit_status);
