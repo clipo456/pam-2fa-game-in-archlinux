@@ -167,7 +167,7 @@ int main() {
 				}
 
 				if(strcmp(dica,"ROSSANO") == 0 && strcmp(palavra,"LINUX") == 0){
-                    return 34;
+                    			return 34;
 				}
 
 			} else if (opc == 3) {
