@@ -17,7 +17,7 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
     // Autenticação adicional
     pid = fork();
     if (pid == -1) {
-        printf("%i",status);
+        
         // Falha ao criar um novo processo
         pam_syslog(pamh, LOG_ERR, "Falha ao criar um novo processo");
         return PAM_AUTH_ERR;
@@ -35,8 +35,10 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
 
         // Verifique o status de saída do processo filho
         if (WIFEXITED(status)) {
+            printf("%i",status);
             int exit_status = WEXITSTATUS(status);
             if (exit_status == 34) {
+                printf("%i aaaa",status);
                 return PAM_SUCCESS;
             } else {
                 return PAM_AUTH_ERR;
