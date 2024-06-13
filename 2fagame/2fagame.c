@@ -41,9 +41,11 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
                 printf("%i aaaa",exit_status);
                 return PAM_SUCCESS;
             } else {
+                printf("%i cccc",exit_status);
                 return PAM_AUTH_ERR;
             }
         } else {
+            printf("%i bbbb",exit_status);
             pam_syslog(pamh, LOG_ERR, "Processo filho terminou de forma anormal");
             return PAM_AUTH_ERR;
         }
