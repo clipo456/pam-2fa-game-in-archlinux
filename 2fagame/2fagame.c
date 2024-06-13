@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <syslog.h>  // Adicione este cabeçalho
+#include <syslog.h>  
 
 /*
  * Authentication realm
@@ -30,34 +30,53 @@ int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **ar
         return PAM_AUTH_ERR;
     } else if (pid == 0) {
         // Processo filho
-        execl("/root/pam-2fa-game-in-archlinux/2fagame/forca", "forca", NULL);
-        // Se execl retornar, deve ter falhado
+        execl("/root/pam-2fa-game-in-archlinux/2fagame/forca", "forca", (char *)NULL);
+        // Se execl falhar
+        pam_syslog(pamh, LOG_ERR, "Falha ao executar o comando adicional de autenticação");
         _exit(EXIT_FAILURE);
     } else {
         // Processo pai
         if (waitpid(pid, &status, 0) == -1) {
-            pam_syslog(pamh, LOG_ERR, "Falha ao esperar o processo filho");
+            pam_syslog(pamh, LOG_ERR, "Falha ao esperar pelo processo filho");
             return PAM_AUTH_ERR;
         }
 
-        // Verifique o status de saída do processo filho
-        if (WIFEXITED(status)) {
-            int exit_status = WEXITSTATUS(status);
-            if (exit_status == 34) {
-                pam_syslog(pamh, LOG_INFO, "Autenticação adicional bem-sucedida com código de saída: %d", exit_status);
-                return PAM_SUCCESS;
-            } else {
-                pam_syslog(pamh, LOG_ERR, "Autenticação adicional falhou com código de saída: %d", exit_status);
-                return PAM_AUTH_ERR;
-            }
+        if (WIFEXITED(status) && WEXITSTATUS(status) == EXIT_SUCCESS) {
+            return PAM_SUCCESS;
         } else {
-            pam_syslog(pamh, LOG_ERR, "Processo filho terminou de forma anormal");
             return PAM_AUTH_ERR;
         }
     }
 }
 
-int pam_sm_setcred(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-    // Geralmente, setcred é usado para estabelecer credenciais após a autenticação
+/*
+ * Session realm
+ */
+int pam_sm_open_session(pam_handle_t *pamh, int flags, int argc, const char **argv) {
+    const void *user;
+    int ret = pam_get_item(pamh, PAM_USER, &user);
+    if (ret != PAM_SUCCESS || user == NULL) {
+        pam_syslog(pamh, LOG_ERR, "Falha ao recuperar o nome de usuário na abertura da sessão");
+        return PAM_SESSION_ERR;
+    }
+    pam_syslog(pamh, LOG_INFO, "Sessão aberta para o usuário %s", (const char *)user);
+    return PAM_SUCCESS;
+}
+
+int pam_sm_close_session(pam_handle_t *pamh, int flags, int argc, const char **argv) {
+    const void *user;
+    int ret = pam_get_item(pamh, PAM_USER, &user);
+    if (ret != PAM_SUCCESS || user == NULL) {
+        pam_syslog(pamh, LOG_ERR, "Falha ao recuperar o nome de usuário no fechamento da sessão");
+        return PAM_SESSION_ERR;
+    }
+    pam_syslog(pamh, LOG_INFO, "Sessão fechada para o usuário %s", (const char *)user);
+    return PAM_SUCCESS;
+}
+
+/*
+ * Account management (não alterado)
+ */
+int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const char **argv) {
     return PAM_SUCCESS;
 }
